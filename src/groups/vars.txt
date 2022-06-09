@@ -1,0 +1,2 @@
+USERNAME anton
+LINUX_HOME /home/anton

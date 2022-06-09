@@ -1,0 +1,21 @@
+{
+	"files": [
+		{
+			"id": 0,
+			"description": "zsh start config",
+			"linux": "/home/$USERNAME/.zshrc",
+			"windows": "",
+			"darwin": "/home/$USERNAME/.zshrc"
+		}
+	],
+	"groups": [
+		{
+			"name": "test",
+			"files": [
+				{
+					
+				}
+			]
+		}
+	]
+}
