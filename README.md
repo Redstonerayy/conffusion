@@ -1,0 +1,4 @@
+# Ideas
+* chocolaty
+* pacman
+* apt
