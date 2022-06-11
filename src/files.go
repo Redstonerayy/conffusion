@@ -9,14 +9,17 @@ import (
 	"time"
 )
 
-func CreateSyncFolder(verbose bool) string {
-	DirPath := path.Join(os.TempDir(), "conffusion"+time.Now().String())
-	err := os.MkdirAll(DirPath, 0700)
-	if err != nil {
-		log.Fatalln("Could not create temp folder!")
-	}
-	if verbose {
-		fmt.Printf("Created folder %s\n", DirPath)
+func CreateSyncFolder(verbose bool, create bool) string {
+	Homedir, _ := os.UserHomeDir()
+	DirPath := path.Join(Homedir, "conffusionbackup", "conffusion"+time.Now().Format("2006-01-02_3:4:5_pm"))
+	if create {
+		err := os.MkdirAll(DirPath, 0700)
+		if err != nil {
+			log.Fatalln("Could not create temp folder!")
+		}
+		if verbose {
+			fmt.Printf("Created folder %s\n", DirPath)
+		}
 	}
 	return DirPath
 
