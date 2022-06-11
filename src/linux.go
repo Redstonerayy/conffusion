@@ -2,6 +2,7 @@ package src
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"path"
 	"strings"
@@ -9,11 +10,11 @@ import (
 
 func Linux(verbose bool, configfolder string) {
 	//read vars
-	filedata, err := ReadFile(path.Join(configfolder, "vars.txt"))
+	filedata, err := ReadFile(verbose, path.Join(configfolder, "vars.txt"))
+	var Variables = make(map[string]string)
 	if err != "read_success" {
 		log.Printf("Couldn't read configfolder %s", configfolder)
 	} else {
-		var Variables map[string]string
 		for _, i := range strings.Split(string(filedata), "\n") {
 			parts := strings.Split(i, " ")
 			Variables[parts[0]] = parts[1]
@@ -21,14 +22,13 @@ func Linux(verbose bool, configfolder string) {
 	}
 	//read config
 	filedata, err = ReadFile(verbose, path.Join(configfolder, "config.json"))
-	var jsonerr;
+	var result map[string]interface{}
 	if err != "read_success" {
 		log.Printf("Couldn't read configfolder %s", configfolder)
 	} else {
-		var config Config
-		jsonerr = json.Unmarshal(filedata, &config)
+		json.Unmarshal([]byte(filedata), &result)
+		fmt.Println(result["files"])
 	}
-	jsonerr.config.Config.Files.Id
 	//create sync folder
 	DirPath := CreateSyncFolder(verbose)
 	//save package list
@@ -36,5 +36,16 @@ func Linux(verbose bool, configfolder string) {
 	SysPackages := GetPackages(verbose, PkgManager)
 	_ = WriteFile(verbose, path.Join(DirPath, "pkgs.txt"), strings.Join(SysPackages, "\n"))
 	//save config files
-
+	for i := 0; i < len(result["files"].([]interface{})); i++ {
+		id := result["files"].([]interface{})[i].(map[string]interface{})["id"].(float64)
+		linux := result["files"].([]interface{})[i].(map[string]interface{})["linux"].(string)
+		for key, val := range Variables {
+			linux = strings.Replace(linux, "$"+key, val, -1)
+		}
+		err := CopyFile(false, linux, path.Join(DirPath, fmt.Sprint(id)+".txt"))
+		if err == "write_error" {
+			log.Printf("Couldn't copy file %s\n", linux)
+		}
+	}
+	//save config groups
 }

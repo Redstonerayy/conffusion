@@ -7,7 +7,7 @@ func main() {
 	ConfigFolder := "/home/anton/conffusion/src/groups"
 	switch SysOs {
 	case "linux":
-		src.Linux(true, ConfigFolder)
+		src.Linux(false, ConfigFolder)
 		// case "windows":
 		// 	Windows()
 		// case "darwin":

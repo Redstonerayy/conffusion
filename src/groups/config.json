@@ -1,7 +1,7 @@
 {
 	"files": [
 		{
-			"id": 0,
+			"id": 1,
 			"description": "zsh start config",
 			"linux": "/home/$USERNAME/.zshrc",
 			"windows": "",
