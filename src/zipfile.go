@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-// https://golangcode.com/create-zip-files-in-go/
+// copeid from https://golangcode.com/create-zip-files-in-go/
 func ZipFiles(filename string, files []string) error {
 
 	newZipFile, err := os.Create(filename)

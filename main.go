@@ -23,6 +23,7 @@ import src "github.com/Redstonerayy/conffusion/src"
 func main() {
 	SysOs := src.GetOS(false)
 	ConfigFolder := "/home/anton/conffusion/src/groups"
+	//execute specific function for each os
 	switch SysOs {
 	case "linux":
 		src.Linux(false, ConfigFolder, true)

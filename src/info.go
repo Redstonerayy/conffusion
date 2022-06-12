@@ -1,6 +1,8 @@
+//functions to get info about the operating system or query things
 package src
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +12,7 @@ import (
 	"strings"
 )
 
+//determine operating to check which functions to run
 func GetOS(verbose bool) string {
 	SystemOs := runtime.GOOS
 	if verbose {
@@ -27,8 +30,11 @@ func GetOS(verbose bool) string {
 	return SystemOs
 }
 
-func GetPackageManager(verbose bool) string {
+//return linux package manager to determine which commands to run
+func GetPackageManager(verbose bool) (string, error) {
 	ExecFolders := strings.Split(os.Getenv("PATH"), ":")
+	//loop over folders in path which could contain the package manager executable
+	//package managers are defined in constants.go
 	for _, i := range PACKAGE_MANAGERS {
 		for _, j := range ExecFolders {
 			_, err := os.Stat(path.Join(j, i))
@@ -36,17 +42,18 @@ func GetPackageManager(verbose bool) string {
 				if verbose {
 					fmt.Printf("Package Manager found: %s\n", i)
 				}
-				return i
+				return i, nil
 			}
 		}
 	}
-	if verbose {
-		log.Fatalln("Package Manager not found!")
-	}
-	return ""
+	log.Println("Package Manager not found!")
+	return "", errors.New("package Manager not found")
 }
 
-func GetPackages(verbose bool, manager string) []string {
+//query a list of packages for a manager to dump to file
+//and enable reinstalling them later
+func GetPackages(verbose bool, manager string) ([]string, error) {
+	//execute listing command
 	var CMD *exec.Cmd
 	switch manager {
 	case "apt":
@@ -54,13 +61,15 @@ func GetPackages(verbose bool, manager string) []string {
 	case "pacman":
 		CMD = exec.Command("pacman", "-Q")
 	default:
-		log.Fatalln("No Package Manager found!")
-		return nil
+		log.Println("Package Manager not supported!")
+		return []string{}, errors.New("package Manager not supported")
 	}
 	out, err := CMD.Output()
 	if err != nil {
-		log.Fatalln("Could not query packages, fatal error, exit!")
+		log.Fatalln("Could not query packages!")
+		return []string{}, errors.New("Could not query packages!")
 	}
+	//format output. needs testing for each manager
 	OutString := string(out)
 	OutLines := strings.Split(OutString, "\n")
 	if verbose {
@@ -68,5 +77,5 @@ func GetPackages(verbose bool, manager string) []string {
 			fmt.Printf("Packages %d: %s \n", i+1, OutLines[i])
 		}
 	}
-	return OutLines
+	return OutLines, nil
 }
