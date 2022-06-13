@@ -2,58 +2,59 @@ package src
 
 import (
 	"archive/zip"
+	"errors"
 	"io"
+	"log"
 	"os"
 )
 
-// copeid from https://golangcode.com/create-zip-files-in-go/
-func ZipFiles(filename string, files []string) error {
-
-	newZipFile, err := os.Create(filename)
+// copied from https://golangcode.com/create-zip-files-in-go/
+func ZipFiles(filepath string, files []string) error {
+	//create file and stack close call
+	newZipFile, err := os.Create(filepath)
 	if err != nil {
-		return err
+		return errors.New("couln't create zip folder")
 	}
 	defer newZipFile.Close()
 
+	//create zipwriter and stack close call
 	zipWriter := zip.NewWriter(newZipFile)
 	defer zipWriter.Close()
 
 	// Add files to zip
 	for _, file := range files {
 		if err = AddFileToZip(zipWriter, file); err != nil {
-			return err
+			log.Printf("Couldn't add file %s", file)
 		}
 	}
 	return nil
 }
 
-func AddFileToZip(zipWriter *zip.Writer, filename string) error {
-
-	fileToZip, err := os.Open(filename)
+func AddFileToZip(zipWriter *zip.Writer, filepath string) error {
+	//open file and stack close call
+	fileToZip, err := os.Open(filepath)
 	if err != nil {
-		return err
+		return errors.New("could not open file " + filepath)
 	}
 	defer fileToZip.Close()
 
-	// Get the file information
+	//get the file information
 	info, err := fileToZip.Stat()
 	if err != nil {
-		return err
+		return errors.New("could not get file stats " + filepath)
 	}
 
+	//extract header info
 	header, err := zip.FileInfoHeader(info)
 	if err != nil {
 		return err
 	}
 
-	// Using FileInfoHeader() above only uses the basename of the file. If we want
-	// to preserve the folder structure we can overwrite this with the full path.
-	//header.Name = filename
-
-	// Change to deflate to gain better compression
-	// see http://golang.org/pkg/archive/zip/#pkg-constants
+	//change to deflate to gain better compression
+	//see http://golang.org/pkg/archive/zip/#pkg-constants
 	header.Method = zip.Deflate
 
+	//copy file into zip
 	writer, err := zipWriter.CreateHeader(header)
 	if err != nil {
 		return err

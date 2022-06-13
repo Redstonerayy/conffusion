@@ -18,15 +18,36 @@
 
 package main
 
-import src "github.com/Redstonerayy/conffusion/src"
+import (
+	"log"
+	"os"
+	"path"
+	"strings"
+
+	src "github.com/Redstonerayy/conffusion/src"
+)
 
 func main() {
 	SysOs := src.GetOS(false)
-	ConfigFolder := "/home/anton/conffusion/src/groups"
+	//read homedir / .conffusion
+	HomeDir, _ := os.UserHomeDir()
+	EtcData, etcerr := src.ReadFile(false, path.Join(HomeDir, ".conffusion"))
+	var EtcVars = make(map[string]string)
+	if etcerr != nil {
+		log.Fatalln("Couldn't read config file!")
+	} else {
+		//create map with config variables
+		for _, i := range strings.Split(string(EtcData), "\n") {
+			parts := strings.Split(i, " ")
+			EtcVars[parts[0]] = parts[1]
+		}
+	}
+
+	ConfigFolder := EtcVars["CONFIGFOLDER"]
 	//execute specific function for each os
 	switch SysOs {
 	case "linux":
-		src.Linux(false, ConfigFolder, true)
+		src.Linux(false, ConfigFolder, true, true)
 		// case "windows":
 		// 	Windows()
 		// case "darwin":

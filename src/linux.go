@@ -4,6 +4,7 @@ package src
 import (
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"path"
@@ -11,27 +12,27 @@ import (
 	"time"
 )
 
-func Linux(verbose bool, configfolder string, zipfiles bool) {
+func Linux(verbose bool, configfolder string, zipfiles bool, deltefolder bool) {
 	//read variables
-	filedata, err := ReadFile(verbose, path.Join(configfolder, "vars.txt"))
+	vardata, varerr := ReadFile(verbose, path.Join(configfolder, "vars.txt"))
 	var Variables = make(map[string]string)
-	if err != nil {
+	if varerr != nil {
 		log.Fatalf("Couldn't read configfolder %s", configfolder)
 	} else {
 		//create map with variables
-		for _, i := range strings.Split(string(filedata), "\n") {
+		for _, i := range strings.Split(string(vardata), "\n") {
 			parts := strings.Split(i, " ")
 			Variables[parts[0]] = parts[1]
 		}
 	}
 
 	//read json config file into an unstructed map
-	filedata, err = ReadFile(verbose, path.Join(configfolder, "config.json"))
+	configdata, configerr := ReadFile(verbose, path.Join(configfolder, "config.json"))
 	var result map[string]interface{}
-	if err != nil {
+	if configerr != nil {
 		log.Fatalf("Couldn't read configfolder %s", configfolder)
 	} else {
-		json.Unmarshal([]byte(filedata), &result)
+		json.Unmarshal([]byte(configdata), &result)
 	}
 
 	//create sync folder to write files to and zip in the end
@@ -79,22 +80,32 @@ func Linux(verbose bool, configfolder string, zipfiles bool) {
 
 	//zip files in folder eventually zip later
 	if zipfiles {
-		files, err := os.ReadDir(SyncPath)
-		if err != nil {
-			log.Printf("Couldn't read folder %s to compress it!\n", SyncPath)
-		} else {
-			// generate string array of files to zip
-			FilesToZip := []string{}
-			for _, value := range files {
-				FilesToZip = append(FilesToZip, path.Join(SyncPath, value.Name()))
-			}
+		FilesToZip := []string{}
+		FileSystem := os.DirFS(SyncPath)
 
-			//zip files
-			Path := path.Join(SyncPath + ".zip")
-			if err := ZipFiles(Path, FilesToZip); err != nil {
-				log.Println("Couldn't zip files!")
+		fs.WalkDir(FileSystem, ".", func(filepath string, d fs.DirEntry, err error) error {
+			if err != nil {
+				log.Printf("Error reading %s\n", filepath)
 			}
-			fmt.Println("Zipped File:", Path)
+			if filepath != "." {
+				FilesToZip = append(FilesToZip, path.Join(SyncPath, filepath))
+			}
+			return nil
+		})
+
+		//zip files
+		Path := path.Join(SyncPath + ".zip")
+		if err := ZipFiles(Path, FilesToZip); err != nil {
+			log.Println("Couldn't zip files!")
+		}
+		fmt.Println("Zipped File:", Path)
+	}
+
+	//delete temporary folder so only zipped one remains, can be changed
+	if deltefolder {
+		syncdeleteerr := os.RemoveAll(SyncPath)
+		if syncdeleteerr != nil {
+			log.Printf("Couldn't remove folder %s\n", SyncPath)
 		}
 	}
 }
