@@ -28,10 +28,11 @@ import (
 )
 
 func main() {
-	SysOs := src.GetOS(false)
-	//read homedir / .conffusion
+	verbose := false
+	SysOs := src.GetOS(verbose)
+	//read main config file at homedir/.conffusion
 	HomeDir, _ := os.UserHomeDir()
-	EtcData, etcerr := src.ReadFile(false, path.Join(HomeDir, ".conffusion"))
+	EtcData, etcerr := src.ReadFile(verbose, path.Join(HomeDir, ".conffusion"))
 	var EtcVars = make(map[string]string)
 	if etcerr != nil {
 		log.Fatalln("Couldn't read config file!")
@@ -47,7 +48,7 @@ func main() {
 	//execute specific function for each os
 	switch SysOs {
 	case "linux":
-		src.Linux(false, ConfigFolder, true, true)
+		src.Linux(verbose, ConfigFolder, true, true)
 		// case "windows":
 		// 	Windows()
 		// case "darwin":

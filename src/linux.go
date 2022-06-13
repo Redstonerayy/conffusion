@@ -43,6 +43,16 @@ func Linux(verbose bool, configfolder string, zipfiles bool, deltefolder bool) {
 		log.Fatalf("Couldn't create sync folder %s", SyncPath)
 	}
 
+	//write config files
+	configwriterr := WriteFile(verbose, path.Join(SyncPath, "config.json"), string(configdata))
+	if configwriterr != nil {
+		log.Print("Couldn't write config.json to sync folder!")
+	}
+	varswriteerr := WriteFile(verbose, path.Join(SyncPath, "vars.txt"), string(vardata))
+	if varswriteerr != nil {
+		log.Print("Couldn't write config.json to sync folder!")
+	}
+
 	//save package list
 	//get packages
 	PkgManager, _ := GetPackageManager(verbose)
@@ -53,7 +63,7 @@ func Linux(verbose bool, configfolder string, zipfiles bool, deltefolder bool) {
 		log.Printf("Couldn't write pkg list %s", path.Join(SyncPath, "pkgs.txt"))
 	}
 
-	//save config files
+	//save files
 	//type assertions are needed when dealing with this map
 	configfiles := result["files"].([]interface{})
 	for i := 0; i < len(configfiles); i++ {
