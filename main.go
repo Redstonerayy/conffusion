@@ -30,6 +30,7 @@ import (
 func main() {
 	verbose := false
 	SysOs := src.GetOS(verbose)
+
 	//read main config file at homedir/.conffusion
 	HomeDir, _ := os.UserHomeDir()
 	EtcData, etcerr := src.ReadFile(verbose, path.Join(HomeDir, ".conffusion"))
@@ -44,11 +45,11 @@ func main() {
 		}
 	}
 
-	ConfigFolder := EtcVars["CONFIGFOLDER"]
 	//execute specific function for each os
+	ConfigFolder := EtcVars["CONFIGFOLDER"]
 	switch SysOs {
 	case "linux":
-		src.Linux(verbose, ConfigFolder, true, true)
+		src.LinuxSave(verbose, ConfigFolder, true, true)
 		// case "windows":
 		// 	Windows()
 		// case "darwin":

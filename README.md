@@ -5,3 +5,13 @@ and bootstrapping new systems with them.
 
 # Todo
 * make bootstrapping possible and test in a Virtual Maschine
+
+# Usage
+Create a .conffusion file in your homefolder
+There different variables can be defined.
+Example Contents of $HOME/.conffusion
+```
+CONFIGFOLDER /my/own/path
+```
+
+CONFIGFOLDER defines the folder where conffusion searched for `config.json` and `vars.txt`.
