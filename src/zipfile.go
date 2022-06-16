@@ -64,6 +64,7 @@ func AddFileToZip(zipWriter *zip.Writer, filepath string) error {
 	return err
 }
 
+//read a zip.File and return the content as []byte
 func ReadZippedFile(file *zip.File) (string, []byte, error) {
 	fileread, err := file.Open()
 	if err != nil {
@@ -79,6 +80,7 @@ func ReadZippedFile(file *zip.File) (string, []byte, error) {
 	return file.Name, content, nil
 }
 
+//read zip folder
 func ReadZipFile(filepath string) (map[string]string, error) {
 	zipreader, err := zip.OpenReader(filepath)
 	if err != nil {
@@ -88,6 +90,7 @@ func ReadZipFile(filepath string) (map[string]string, error) {
 	defer zipreader.Close()
 
 	var files = make(map[string]string)
+	//loop over files and store in map, name -> content as bytes
 	for _, file := range zipreader.File {
 		filename, content, _ := ReadZippedFile(file)
 		files[filename] = string(content)

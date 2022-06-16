@@ -2,6 +2,7 @@ package src
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"path"
 	"strings"
@@ -25,7 +26,7 @@ func ReadVariables(configfolder string, verbose bool) (map[string]string, []byte
 
 func ReadJsonConfig(configfolder string, verbose bool) (map[string]interface{}, []byte) {
 	//read json config file into an unstructed map
-	configdata, configerr := ReadFile(verbose, path.Join(configfolder, "config.json"))
+	configdata, configerr := ReadFile(verbose, path.Join(configfolder, ALLCONFIG))
 	var Config map[string]interface{}
 	if configerr != nil {
 		log.Fatalf("Couldn't read configfolder %s", configfolder)
@@ -33,4 +34,16 @@ func ReadJsonConfig(configfolder string, verbose bool) (map[string]interface{}, 
 		json.Unmarshal([]byte(configdata), &Config)
 	}
 	return Config, configdata
+}
+
+func ReadTxtConfig(configfolder string, verbose bool) ([]string, []byte, error) {
+	//read json config file into an unstructed map
+	configdata, configerr := ReadFile(verbose, path.Join(configfolder, LINCONFIG))
+	if configerr != nil {
+		log.Fatalf("Couldn't read configfolder %s", configfolder)
+		return []string{}, configdata, errors.New("could not read configfolder" + configfolder)
+	} else {
+		Config := strings.Split(string(configdata), "\n")
+		return Config, configdata, nil
+	}
 }

@@ -11,4 +11,8 @@ var PACKAGE_MANAGERS = []string{
 
 var FLAGS = []string{
 	"zip",
+	"a",
 }
+
+var ALLCONFIG string = "config.json"
+var LINCONFIG string = "lconfig.txt"

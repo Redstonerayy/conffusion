@@ -47,6 +47,10 @@ func main() {
 
 	//parse processs arguments
 	Operation, Flags := src.ParseArguments(verbose)
+	configtype := src.LINCONFIG
+	if _, ok := Flags["a"]; ok {
+		configtype = src.ALLCONFIG
+	}
 
 	if Operation == "backup" {
 		//make backup
@@ -54,7 +58,7 @@ func main() {
 		//execute specific function for each os
 		switch SysOs {
 		case "linux":
-			src.LinuxSave(verbose, ConfigFolder, true, true)
+			src.LinuxSave(verbose, ConfigFolder, true, true, configtype)
 			// case "windows":
 			// 	Windows()
 			// case "darwin":
@@ -69,7 +73,7 @@ func main() {
 		//execute specific function for each os
 		switch SysOs {
 		case "linux":
-			src.LinuxBootstrap(verbose, ZipFile, true, true)
+			src.LinuxBootstrap(verbose, ZipFile, true, true, configtype)
 			// case "windows":
 			// 	Windows()
 			// case "darwin":
