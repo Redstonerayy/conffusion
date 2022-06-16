@@ -23,8 +23,8 @@ func CreateFolder(verbose bool, path string) error {
 }
 
 //write file
-func WriteFile(verbose bool, filepath string, content string) error {
-	err := ioutil.WriteFile(filepath, []byte(content), 0600)
+func WriteFile(verbose bool, filepath string, content []byte) error {
+	err := ioutil.WriteFile(filepath, content, 0600)
 	if err != nil {
 		log.Printf("Could not write file %s\n", filepath)
 		return errors.New("could not write file " + filepath)
@@ -54,7 +54,7 @@ func CopyFile(verbose bool, filesource string, filetarget string) error {
 	//write when no error
 	if err == nil {
 		//write data, converting it to a string before that
-		writeerr := WriteFile(verbose, filetarget, string(filedata))
+		writeerr := WriteFile(verbose, filetarget, filedata)
 		return writeerr
 	}
 	return err

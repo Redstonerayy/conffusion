@@ -45,14 +45,36 @@ func main() {
 		}
 	}
 
-	//execute specific function for each os
-	ConfigFolder := EtcVars["CONFIGFOLDER"]
-	switch SysOs {
-	case "linux":
-		src.LinuxSave(verbose, ConfigFolder, true, true)
-		// case "windows":
-		// 	Windows()
-		// case "darwin":
-		// 	Darwin()
+	//parse processs arguments
+	Operation, Flags := src.ParseArguments(verbose)
+
+	if Operation == "backup" {
+		//make backup
+		ConfigFolder := EtcVars["CONFIGFOLDER"]
+		//execute specific function for each os
+		switch SysOs {
+		case "linux":
+			src.LinuxSave(verbose, ConfigFolder, true, true)
+			// case "windows":
+			// 	Windows()
+			// case "darwin":
+			// 	Darwin()
+		}
+	} else if Operation == "bootstrap" {
+		//make bootstrap
+		var ZipFile string
+		if val, ok := Flags["zip"]; ok {
+			ZipFile = val
+		}
+		//execute specific function for each os
+		switch SysOs {
+		case "linux":
+			src.LinuxBootstrap(verbose, ZipFile, true, true)
+			// case "windows":
+			// 	Windows()
+			// case "darwin":
+			// 	Darwin()
+		}
 	}
+
 }

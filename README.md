@@ -5,6 +5,8 @@ and bootstrapping new systems with them.
 
 # Todo
 * make bootstrapping possible and test in a Virtual Maschine
+* make it possible to choose if u want to store the config from the bootstrap file
+* change pkg file name to package manager name
 
 # Usage
 Create a .conffusion file in your homefolder

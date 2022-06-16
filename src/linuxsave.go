@@ -25,11 +25,11 @@ func LinuxSave(verbose bool, configfolder string, zipfiles bool, deltefolder boo
 	}
 
 	//write config files
-	configwriterr := WriteFile(verbose, path.Join(SyncPath, "config.json"), string(configdata))
+	configwriterr := WriteFile(verbose, path.Join(SyncPath, "config.json"), configdata)
 	if configwriterr != nil {
 		log.Print("Couldn't write config.json to sync folder!")
 	}
-	varswriteerr := WriteFile(verbose, path.Join(SyncPath, "vars.txt"), string(vardata))
+	varswriteerr := WriteFile(verbose, path.Join(SyncPath, "vars.txt"), vardata)
 	if varswriteerr != nil {
 		log.Print("Couldn't write config.json to sync folder!")
 	}
@@ -39,7 +39,7 @@ func LinuxSave(verbose bool, configfolder string, zipfiles bool, deltefolder boo
 	PkgManager, _ := GetPackageManager(verbose)
 	SysPackages, _ := GetPackages(verbose, PkgManager)
 	//write list
-	packagelisterr := WriteFile(verbose, path.Join(SyncPath, "pkgs.txt"), strings.Join(SysPackages, "\n"))
+	packagelisterr := WriteFile(verbose, path.Join(SyncPath, "pkgs.txt"), []byte(strings.Join(SysPackages, "\n")))
 	if packagelisterr != nil {
 		log.Printf("Couldn't write pkg list %s", path.Join(SyncPath, "pkgs.txt"))
 	}

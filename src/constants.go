@@ -8,3 +8,7 @@ var PACKAGE_MANAGERS = []string{
 	"apk",
 	"rpm",
 }
+
+var FLAGS = []string{
+	"zip",
+}

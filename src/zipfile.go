@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"errors"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 )
@@ -61,4 +62,35 @@ func AddFileToZip(zipWriter *zip.Writer, filepath string) error {
 	}
 	_, err = io.Copy(writer, fileToZip)
 	return err
+}
+
+func ReadZippedFile(file *zip.File) (string, []byte, error) {
+	fileread, err := file.Open()
+	if err != nil {
+		log.Printf("Couldn't open file %s\n", file.Name)
+		return file.Name, []byte{}, errors.New("could not open file " + file.Name)
+	}
+	defer fileread.Close()
+	content, err := ioutil.ReadAll(fileread)
+	if err != nil {
+		log.Printf("Couldn't read file %s\n", file.Name)
+		return file.Name, []byte{}, errors.New("could not read file " + file.Name)
+	}
+	return file.Name, content, nil
+}
+
+func ReadZipFile(filepath string) (map[string]string, error) {
+	zipreader, err := zip.OpenReader(filepath)
+	if err != nil {
+		log.Fatalf("Couldn't read zipfile %s\n", filepath)
+		return map[string]string{}, errors.New("could not read zipfile " + filepath)
+	}
+	defer zipreader.Close()
+
+	var files = make(map[string]string)
+	for _, file := range zipreader.File {
+		filename, content, _ := ReadZippedFile(file)
+		files[filename] = string(content)
+	}
+	return files, nil
 }
