@@ -47,9 +47,16 @@ func main() {
 
 	//parse processs arguments
 	Operation, Flags := src.ParseArguments(verbose)
+	//is it a linux config
 	configtype := src.LINCONFIG
 	if _, ok := Flags["a"]; ok {
 		configtype = src.ALLCONFIG
+	}
+
+	//flag if config should be writter to $HOME/.config/conffusion/[configname]
+	writeconfig := false
+	if Flags["c"] == "true" {
+		writeconfig = true
 	}
 
 	if Operation == "backup" {
@@ -73,7 +80,7 @@ func main() {
 		//execute specific function for each os
 		switch SysOs {
 		case "linux":
-			src.LinuxBootstrap(verbose, ZipFile, true, true, configtype)
+			src.LinuxBootstrap(verbose, ZipFile, true, true, configtype, writeconfig)
 			// case "windows":
 			// 	Windows()
 			// case "darwin":

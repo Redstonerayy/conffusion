@@ -4,14 +4,13 @@ want to configure it the same as another system. Focused on linux this program w
 and bootstrapping new systems with them. 
 
 # Todo
-* make bootstrapping possible and test in a Virtual Maschine
-* make it possible to choose if u want to store the config from the bootstrap file
 * change pkg file name to package manager name
+* install packages
 
 # Usage
 Create a .conffusion file in your homefolder
 There different variables can be defined.
-Example Contents of $HOME/.conffusion
+Example Contents of $HOME/.conffusion or look at .conffusion
 ```
 CONFIGFOLDER /my/own/path
 ```

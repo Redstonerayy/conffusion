@@ -18,6 +18,7 @@ func LinuxSave(verbose bool, configfolder string, zipfiles bool, deltefolder boo
 	var configdata []byte
 	var LinuxConfig []string
 	var AllConfig map[string]interface{}
+
 	if configtype == LINCONFIG {
 		LinuxConfig, configdata, _ = ReadTxtConfig(configfolder, verbose)
 	} else {
