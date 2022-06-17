@@ -4,9 +4,7 @@ want to configure it the same as another system. Focused on linux this program w
 and bootstrapping new systems with them. 
 
 # Todo
-* change pkg file name to package manager name
-* install packages
-
+* Refactoring, Bugs
 # Usage
 Create a .conffusion file in your homefolder
 There different variables can be defined.

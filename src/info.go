@@ -66,8 +66,8 @@ func GetPackages(verbose bool, manager string) ([]string, error) {
 	}
 	out, err := CMD.Output()
 	if err != nil {
-		log.Fatalln("Could not query packages!")
-		return []string{}, errors.New("Could not query packages!")
+		log.Println("Could not query packages!")
+		return []string{}, errors.New("could not query packages")
 	}
 	//format output. needs testing for each manager
 	OutString := string(out)

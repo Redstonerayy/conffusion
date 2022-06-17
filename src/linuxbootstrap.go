@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"path"
 	"strconv"
 	"strings"
@@ -22,7 +23,50 @@ func LinuxBootstrap(verbose bool, zipfile string, zipfiles bool, deltefolder boo
 	}
 
 	//install package list
-	//TODO	PkgManager, _ := GetPackageManager(verbose)
+	PkgManager, getpkgerr := GetPackageManager(verbose)
+	if getpkgerr == nil {
+		SysPackagesWithVersion, qpkgerr := GetPackages(verbose, PkgManager)
+		if qpkgerr == nil {
+			//install packages
+			if val, ok := files[PkgManager+".txt"]; ok {
+				BackupPackagesWithVersion := strings.Split(val, "\n")
+				//remove version numbers
+				var BackupPackages []string
+				for _, val := range BackupPackagesWithVersion {
+					BackupPackages = append(BackupPackages, strings.Split(val, " ")[0])
+				}
+				var SysPackages []string
+				for _, val := range SysPackagesWithVersion {
+					SysPackages = append(SysPackages, strings.Split(val, " ")[0])
+				}
+				//remove packages on system from backup packages
+				for i := 0; i < len(BackupPackages); i++ {
+					for j := 0; j < len(SysPackages); j++ {
+						if BackupPackages[i] == SysPackages[j] {
+							BackupPackages = append(BackupPackages[:i], BackupPackages[i+1:]...)
+						}
+					}
+				}
+				Packages := strings.Join(BackupPackages, " ")
+
+				var CMD *exec.Cmd
+				switch PkgManager {
+				case "apt":
+					CMD = exec.Command("apt", "install", "-y", Packages)
+				case "pacman":
+					CMD = exec.Command("sudo", "pacman", "-Syu", "--noconfirm", Packages)
+				default:
+					log.Println("Package Manager not supported!")
+				}
+				out, err := CMD.Output()
+				if err != nil {
+					log.Println("Error installing Packages")
+					log.Println(string(out))
+				}
+			}
+		}
+	}
+
 	//write config file
 	if writeconfig {
 		HomeDir, _ := os.UserHomeDir()

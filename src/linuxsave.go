@@ -45,12 +45,16 @@ func LinuxSave(verbose bool, configfolder string, zipfiles bool, deltefolder boo
 
 	//save package list
 	//get packages
-	PkgManager, _ := GetPackageManager(verbose)
-	SysPackages, _ := GetPackages(verbose, PkgManager)
-	//write list
-	packagelisterr := WriteFile(verbose, path.Join(SyncPath, "pkgs.txt"), []byte(strings.Join(SysPackages, "\n")))
-	if packagelisterr != nil {
-		log.Printf("Couldn't write pkg list %s", path.Join(SyncPath, "pkgs.txt"))
+	PkgManager, getpkgerr := GetPackageManager(verbose)
+	if getpkgerr == nil {
+		SysPackages, qpkgerr := GetPackages(verbose, PkgManager)
+		if qpkgerr == nil {
+			//write list
+			packagelisterr := WriteFile(verbose, path.Join(SyncPath, PkgManager+".txt"), []byte(strings.Join(SysPackages, "\n")))
+			if packagelisterr != nil {
+				log.Printf("Couldn't write pkg list %s", path.Join(SyncPath, PkgManager+".txt"))
+			}
+		}
 	}
 
 	//save files depending on config type
